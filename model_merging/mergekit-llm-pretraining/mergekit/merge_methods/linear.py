@@ -1,0 +1,113 @@
+# Copyright (C) 2025 Arcee AI
+# SPDX-License-Identifier: LGPL-3.0-only
+
+from typing import Any, Dict, List, Optional
+
+import torch
+from typing_extensions import override
+
+from mergekit.architecture import WeightInfo
+from mergekit.common import ImmutableMap, ModelReference, apply_noise
+from mergekit.graph import Task
+from mergekit.merge_methods.base import (
+    ConfigParameterDef,
+    MergeMethod,
+    MergeTensorInput,
+)
+from mergekit.merge_methods.rectify_embed import rectify_embed_sizes
+
+
+class LinearMergeTask(Task[torch.Tensor]):
+    gather_tensors: MergeTensorInput
+    tensor_parameters: ImmutableMap[ModelReference, ImmutableMap[str, Any]]
+    normalize: bool
+    weight_info: WeightInfo
+    inject_noise: bool
+    noise_scale: float
+    
+    def uses_accelerator(self) -> bool:
+        return True
+
+    def arguments(self) -> Dict[str, Task]:
+        return {"tensors": self.gather_tensors}
+
+    def execute(
+        self, tensors: Dict[ModelReference, torch.Tensor], **_kwargs
+    ) -> torch.Tensor:
+
+        keys = list(tensors.keys())
+
+        tensors = [tensors[key] for key in keys]
+        weights = [self.tensor_parameters[key]["weight"] for key in keys]
+
+        rectify_embed_sizes(self.weight_info, tensors)
+
+        unique_shapes = set(t.shape for t in tensors)
+        if len(unique_shapes) != 1:
+            raise RuntimeError(
+                f"Tensor size mismatch for {self.weight_info.name}, sizes: {list(unique_shapes)}"
+            )
+    
+        tensors = torch.stack(tensors, dim=0)
+
+        if self.inject_noise:
+            tensors = apply_noise(tensors, self.noise_scale)     
+        weights = torch.tensor(weights, dtype=tensors.dtype, device=tensors.device)
+        while len(weights.shape) < len(tensors.shape):
+            weights.unsqueeze_(-1)
+
+        res = (weights * tensors).sum(dim=0)
+        if self.normalize:
+            res = res / weights.sum(dim=0)
+
+        return res
+
+    def group_label(self) -> Optional[str]:
+        return self.gather_tensors.group_label()
+
+
+class LinearMerge(MergeMethod):
+    def name(self) -> str:
+        return "linear"
+
+    @override
+    def pretty_name(self) -> Optional[str]:
+        return "Linear"
+
+    @override
+    def reference_url(self) -> Optional[str]:
+        return "https://arxiv.org/abs/2203.05482"
+
+    def parameters(self) -> List[ConfigParameterDef]:
+        return [
+            ConfigParameterDef(name="normalize", required=False, default_value=True),
+            ConfigParameterDef(name="inject_noise", required=False, default_value=False),
+            ConfigParameterDef(name="noise_scale", required=False, default_value=0.0),
+        ]
+
+    def tensor_parameters(self) -> List[ConfigParameterDef]:
+        return [ConfigParameterDef(name="weight", required=True)]
+
+    def make_task(
+        self,
+        *,
+        output_weight: WeightInfo,
+        tensors: MergeTensorInput,
+        parameters: Dict[str, Any],
+        tensor_parameters: ImmutableMap[ModelReference, ImmutableMap[str, Any]],
+        **_kwargs,
+    ) -> Task:
+        return LinearMergeTask(
+            gather_tensors=tensors,
+            tensor_parameters=tensor_parameters,
+            normalize=parameters["normalize"],
+            inject_noise=parameters["inject_noise"],
+            noise_scale=parameters["noise_scale"],
+            selective_noise=parameters["selective_noise"],
+            dropout=parameters["dropout"],
+            prune_pct=parameters["prune_pct"],
+            disjoint_mean=parameters["disjoint_mean"],
+            elect_sign=parameters["elect_sign"],
+            no_ties_params=parameters["no_ties_params"],
+            weight_info=output_weight,
+        )
