@@ -1,8 +1,7 @@
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 from pathlib import Path
-import os 
 
-BASE_DIR = os.path.join(os.path.dirname(__file__), "pythia_checkpoints")
+BASE_DIR = Path(__file__).parent.parent / "pythia_checkpoints"
 
 MODELS = [
     "EleutherAI/pythia-2.8b",
@@ -25,7 +24,7 @@ all_steps = early_steps + late_steps
 
 def download_checkpoint(model_name, step):
     revision = f"step{step}"
-    cache_dir = Path(BASE_DIR) / model_name.replace("/", "_") / revision
+    cache_dir = BASE_DIR / model_name.replace("/", "_") / revision
     if cache_dir.exists():
         print(f"[Already Downloaded] {model_name} @ {revision}")
         return 

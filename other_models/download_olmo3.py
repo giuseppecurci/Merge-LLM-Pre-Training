@@ -1,9 +1,8 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from pathlib import Path
-import os
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 MODEL_NAME = "allenai/Olmo-3-1025-7B"
-BASE_ROOT = Path(os.path.join(os.path.dirname(__file__), MODEL_NAME.replace("/", "_")))
+BASE_DIR = Path(__file__).parent.parent / MODEL_NAME.replace("/", "_")
 STAGE = "stage1"
 
 N = 15
@@ -23,7 +22,7 @@ all_steps = early_steps + late_steps
 
 def download_checkpoint(model_name, stage, step):
     revision = f"{stage}-step{step}"
-    cache_dir = BASE_ROOT / revision.replace("stage1-", "")
+    cache_dir = BASE_DIR / revision.replace("stage1-", "")
 
     if cache_dir.exists():
         print(f"[Already Downloaded] {model_name} @ {revision}")

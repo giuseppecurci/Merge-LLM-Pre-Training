@@ -1,7 +1,8 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import os 
+import Path 
 
-BASE_DIR = os.path.join(os.path.dirname(__file__), "smollm3_checkpoints")
+BASE_DIR = Path(__file__).parent.parent / "smollm3_checkpoints"
 
 LAST_STABLE_STEP = 3_440_000
 LAST_DECAY_STEP = 4_720_000
@@ -39,7 +40,7 @@ for stage in STAGES:
         revision = "stage{}-step-{}".format(num_stage, step)
 
         print(f"Downloading {revision}")
-        cache_dir = os.path.join(BASE_DIR, revision.replace("-", "_"))
+        cache_dir = BASE_DIR / revision.replace("-", "_")
 
         if os.path.exists(cache_dir):
             print("Skipping already downloaded")
