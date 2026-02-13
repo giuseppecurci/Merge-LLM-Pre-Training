@@ -208,7 +208,7 @@ __marimo__/
 
 # Venv
 evaluation/harnessvenv
-model_merging/mergekit-llm-pretraining/model_merging_venv
+model_merging/model_merging_venv
 
 # Models
 pythia_checkpoints/
