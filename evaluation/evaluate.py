@@ -4,12 +4,10 @@ import argparse
 import os 
 import warnings 
 
+BASE_DIR = os.path.dirname(__file__)
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Esegui valutazioni LM con accelerate')
-    parser.add_argument('--exp-path', default="experiments", type=str, 
-                        help='Percorso al file di configurazione YAML')
-    parser.add_argument('--general-tasks', default="experiments/general_and_tasks.yaml", type=str, 
-                        help="Path defining tasks and other settings such as batch_size, device...")
     parser.add_argument('--dry-run', action="store_true", help="Prints info experiments without running them")
     parser.add_argument('--devices', type=str, default=None, help="Comma separated list of GPU ids to use. If not set, it will wait for free GPUs.")
     return parser.parse_args()
@@ -18,7 +16,10 @@ def main():
     
     args = parse_args()
     
-    with open(args.general_tasks) as f:
+    exp_path = os.path.join(BASE_DIR, "experiments")
+    general_and_tasks_path = os.path.join(BASE_DIR, "general_and_tasks.yaml")
+
+    with open(general_and_tasks_path) as f:
         general_and_tasks = yaml.safe_load(f)
     model_format = general_and_tasks['model_format']
     batch_size = str(general_and_tasks['batch_size'])
@@ -29,7 +30,6 @@ def main():
 
     models_to_eval = []
     models_to_not_eval = []
-    exp_path = args.exp_path 
     for model_name in os.listdir(exp_path):
         model_path = os.path.join(exp_path, model_name)
         if not os.path.isdir(model_path): continue
@@ -48,16 +48,10 @@ def main():
             method_name = method_steps["name"]
             method_path = os.path.join(model_path, method_name)
             for step_model_path in method_steps["steps"]:
-                step, model_method_path, to_eval = step_model_path["step"], step_model_path["model_path"], step_model_path.get("to_eval", True)
+                step, model_method_path = step_model_path["step"], step_model_path["model_path"]
                 out_path = os.path.join(method_path, step, str(num_few_shots))
                 if os.path.exists(out_path): 
                     continue
-                elif not to_eval:
-                    models_to_not_eval.append({
-                        "out_path": out_path,
-                        "model_path": model_method_path,
-                        "specific_tasks": specific_tasks,
-                        })
                 else:
                     if not os.path.exists(model_method_path): 
                         warnings.warn(f"{model_method_path} does not exist. Fix {methods_file_path}")
@@ -68,25 +62,7 @@ def main():
                         "specific_tasks": specific_tasks
                         })
 
-    if models_to_not_eval and not args.dry_run:
-        print(f"There are {len(models_to_not_eval)} experiments that are set to no eval")
-        while True:
-            choice = input("Choose action [show/ignore/eval_all]: ").strip().lower()
-            if choice == "show":
-                print("The following methods are set to no eval") 
-                for model_to_not_eval in models_to_not_eval:
-                    print(f"- {model_to_not_eval['out_path']} \n    - {model_to_not_eval['model_path']}")
-                print("="*50)
-            elif choice == "ignore":
-                break
-            elif choice == "eval_all":
-                models_to_eval.extend(models_to_not_eval)
-                models_to_not_eval.clear()
-                break
-            else:
-                print("Invalid answer")
-
-    print(f"Running {len(models_to_eval)} experiments. Not evaluating {len(models_to_not_eval)} methods.")
+    print(f"Running {len(models_to_eval)} experiments.")
     print(f" - num few shots: {num_few_shots}")
     print(f" - batch size: {batch_size}")
     print(f" - default tasks ({len(tasks)}): {tasks}")
