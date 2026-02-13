@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Venv
+evaluation/harnessvenv
+model_merging/mergekit-llm-pretraining/model_merging_venv
+
+# Models
+pythia_checkpoints/
+smollm3_checkpoints/
+allenai_Olmo-3-1025-7B/
+our_models/
