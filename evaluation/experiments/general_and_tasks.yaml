@@ -1,0 +1,25 @@
+tasks:
+  # Fill in the blanks
+- winogrande
+  # QA - knowledge
+- arc_easy
+- sciq
+  # sentence completion
+- hellaswag
+- hellaswag_it
+- hellaswag_es
+- hellaswag_fr
+- hellaswag_de
+  # nli
+- xnli_en
+- xnli_es
+- xnli_fr
+- xnli_de
+  # physical commonsense reasoning 
+- piqa
+- xcopa_it
+
+batch_size: auto
+device: cuda
+model_format: hf
+num_few_shots: 5
