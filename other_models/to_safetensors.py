@@ -129,7 +129,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--type",
+        "--model",
         choices=["pythia", "smollm3", "olmo3"],
         required=True,
         help="Model type",
@@ -150,11 +150,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.type == "pythia":
+    if args.model == "pythia":
         process_pythia(args.base_ckpt_dir, args.rm_shards)
-    elif args.type == "smollm3":
+    elif args.model == "smollm3":
         process_smollm3(args.base_ckpt_dir, args.rm_shards)
-    elif args.type == "olmo3":
+    elif args.model == "olmo3":
         process_olmo(args.base_ckpt_dir, args.rm_shards)
 
     print("\nAll checkpoints processed.")
