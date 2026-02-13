@@ -1,0 +1,3 @@
+[submodule "mergekit-llm-pretraining"]
+	path = mergekit-llm-pretraining
+	url = https://github.com/giuseppecurci/mergekit-llm-pretraining.git
