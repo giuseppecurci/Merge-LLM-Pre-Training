@@ -118,7 +118,6 @@ def write_mergekit_yaml(
     checkpoints: dict[int, Path],
     outfolder: str,
     merge_strategy: str,
-    merge_multi_stage: bool = False,
     yaml_name: str = "mergekit.yaml",
     alpha: float | None = None,
     pull_secondary_model: float | None = None,
@@ -144,6 +143,8 @@ def write_mergekit_yaml(
         "slerp",
         "ties",
     }
+
+    merge_multi_stage = merge_strategy == "slerp"
 
     if merge_multi_stage:
         # requires hf folder, not just the .safetensors file

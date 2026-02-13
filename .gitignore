@@ -211,7 +211,8 @@ evaluation/harnessvenv
 model_merging/model_merging_venv
 
 # Models
-pythia_checkpoints/
-smollm3_checkpoints/
-allenai_Olmo-3-1025-7B/
-our_models/
+pythia_checkpoints
+smollm3_checkpoints
+allenai_Olmo-3-1025-7B
+checkpoints
+model_merging/merged_models

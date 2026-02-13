@@ -176,7 +176,7 @@ def prepare_single_merge(
         out_dir += f"_alpha{alpha}"
     if pull_secondary_model:
         out_dir += f"_pull_model{pull_secondary_model}"
-    if is_random(merge_strategy, inject_noise, ckpt_dropout):
+    if is_random(inject_noise, ckpt_dropout):
         out_dir += f"_{seed}"
     if inject_noise:
         out_dir += f"_noisy_scale{noise_scale}"
@@ -342,7 +342,8 @@ def prepare_merge(
             inject_noise=inject_noise,
             noise_scale=noise_scale,
             lambda_weight=lambda_weight,
-            density=density
+            density=density,
+            ckpt_dropout=ckpt_dropout
         )
         merge_dirs.append(out_dir_s)
         print("="*50)

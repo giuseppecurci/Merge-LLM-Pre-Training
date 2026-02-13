@@ -6,7 +6,7 @@ import sys
 from pathlib import Path 
 import shutil
 
-BASE_DIR = "Merge-LLM-Pre-Training"
+BASE_DIR = Path(__file__).parent.parent.parent
 
 def already_exists(steps_path):
     merged_model_path = os.path.join(steps_path, "merged_model")

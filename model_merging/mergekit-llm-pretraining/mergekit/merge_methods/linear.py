@@ -103,11 +103,5 @@ class LinearMerge(MergeMethod):
             normalize=parameters["normalize"],
             inject_noise=parameters["inject_noise"],
             noise_scale=parameters["noise_scale"],
-            selective_noise=parameters["selective_noise"],
-            dropout=parameters["dropout"],
-            prune_pct=parameters["prune_pct"],
-            disjoint_mean=parameters["disjoint_mean"],
-            elect_sign=parameters["elect_sign"],
-            no_ties_params=parameters["no_ties_params"],
             weight_info=output_weight,
         )

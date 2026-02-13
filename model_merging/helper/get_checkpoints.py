@@ -4,8 +4,7 @@ from typing import Dict
 
 def resolve_checkpoint_paths(
     base_path: str,
-    steps: list[int],
-    use_safetensors: bool,
+    steps: list[int]
 ) -> Dict[int, Path]:
 
     base = Path(base_path)
@@ -106,16 +105,13 @@ def resolve_checkpoint_paths(
             continue
 
         # ---- Safetensors handling ----
-        if use_safetensors:
-            st_path = snapshot_path / "model.safetensors"
-            if not st_path.exists():
-                raise FileNotFoundError(
-                    f"Expected safetensors file not found for step {step}: {st_path}"
-                )
-            resolved[step] = st_path
-        else:
-            resolved[step] = snapshot_path
-
+        st_path = snapshot_path / "model.safetensors"
+        if not st_path.exists():
+            raise FileNotFoundError(
+                f"Expected safetensors file not found for step {step}: {st_path}"
+            )
+        resolved[step] = st_path
+        
     assert len(resolved) >= 2, (
         f"Found only {len(resolved)} checkpoints, but need at least 2 for {base_path}"
     )

@@ -65,7 +65,7 @@ python model_merging/helper/prepare_merge \
     --async-write \
     --start-step [starting-step] \
     --end-step [end-step] \
-    --range-step [range-step] \          # e.g. 1k Olmo, 2k Pythia, etc.
+    --range-step [range-step] \          # 1k Olmo, 2k Pythia, 40k Smollm3, 2k our models
     --merge-strategy [merge-strategy] \  # one of: linear, ema, wma, slerp, ties
     --alpha [0.2] \                      # used for EMA
     --pull-secondary-model [0.4]         # used for SLERP
