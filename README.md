@@ -24,6 +24,7 @@ source model_merging/model_merging_venv/bin/activate
 
 cd model_merging/mergekit-llm-pretraining
 pip install -e .
+cd ..
 pip install -r requirements_merge.txt
 ```
 
