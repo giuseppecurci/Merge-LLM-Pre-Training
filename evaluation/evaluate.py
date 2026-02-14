@@ -17,19 +17,20 @@ def main():
     args = parse_args()
     
     exp_path = os.path.join(BASE_DIR, "experiments")
-    general_and_tasks_path = os.path.join(BASE_DIR, "general_and_tasks.yaml")
+    general_and_tasks_path = os.path.join(exp_path, "general_and_tasks.yaml")
 
     with open(general_and_tasks_path) as f:
         general_and_tasks = yaml.safe_load(f)
+    
     model_format = general_and_tasks['model_format']
     batch_size = str(general_and_tasks['batch_size'])
     device = str(general_and_tasks['device'])
-    device_ids = args.devices
     tasks = general_and_tasks['tasks']
     num_few_shots = general_and_tasks["num_few_shots"]
 
+    device_ids = args.devices if args.devices else "all_avail"
+
     models_to_eval = []
-    models_to_not_eval = []
     for model_name in os.listdir(exp_path):
         model_path = os.path.join(exp_path, model_name)
         if not os.path.isdir(model_path): continue
@@ -66,7 +67,7 @@ def main():
     print(f" - num few shots: {num_few_shots}")
     print(f" - batch size: {batch_size}")
     print(f" - default tasks ({len(tasks)}): {tasks}")
-    print(f" - device: {device}")
+    print(f" - device: {device} ({device_ids})")
     for model_to_eval in models_to_eval:
         num_specific_tasks = len(model_to_eval["specific_tasks"].split(","))
         print(
@@ -81,7 +82,7 @@ def main():
 
     for model_to_eval in models_to_eval:
         
-        if device_ids:
+        if device_ids != "all_avail":
             os.environ["CUDA_VISIBLE_DEVICES"] = device_ids
 
         model_args = f"pretrained={model_to_eval['model_path']},dtype=float16" 
