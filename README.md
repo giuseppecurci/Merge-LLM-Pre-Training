@@ -57,6 +57,21 @@ source model_merging/model_merging_venv/bin/activate
 
 ---
 
+## Using Helpers
+
+To simplify running merging experiments, we provide a set of helper scripts that automatically traverse checkpoint directories and generate the required merging configuration files.
+
+If you plan to use these utilities, ensure that your Villanova checkpoint directory is organized as follows:
+
+```
+checkpoints/
+└── model/
+    └── checkpoints/
+        └── step=*/
+            └── hf/
+```
+This structure is required for the scripts to correctly locate and process the model checkpoints. Otherwise you can simply create the config files manually and run the merges following [MergeKit](https://github.com/arcee-ai/mergekit) instructions.
+
 ## Linear, Non-Linear and TV Methods
 
 ```bash
