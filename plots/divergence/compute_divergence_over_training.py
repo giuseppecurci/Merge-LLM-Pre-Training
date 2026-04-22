@@ -5,7 +5,6 @@ from collections import defaultdict
 import numpy as np
 import torch
 from safetensors.torch import safe_open
-import matplotlib.pyplot as plt
 import warnings
 from pathlib import Path
 from tqdm import tqdm

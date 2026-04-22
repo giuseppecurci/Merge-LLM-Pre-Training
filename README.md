@@ -3,6 +3,8 @@
 Official repository of the paper  
 **"Practical Guidelines for Model Merging in LLM Pre-Training"** (ACL, 2026)
 
+Checkpoints of the Villanova model will be soon made available.
+
 ---
 
 # Environment Setup
@@ -38,14 +40,12 @@ cd evaluation
 pip install -r requirements_eval.txt
 ```
 
-# Download Models
+# Download Other Models
 
 ```bash
 chmod +x other_models/setup.sh
 ./other_models/setup.sh
 ```
-
-Our checkpoints will be released upon acceptance of the paper.
 
 # Merging
 
@@ -61,7 +61,7 @@ source model_merging/model_merging_venv/bin/activate
 
 To simplify running merging experiments, we provide a set of helper scripts that automatically traverse checkpoint directories and generate the required merging configuration files.
 
-If you plan to use these utilities, ensure that your Villanova checkpoint directory is organized as follows:
+If you plan to use these utilities, ensure that your checkpoint directory is organized as follows:
 
 ```
 checkpoints/
@@ -169,17 +169,17 @@ cd plots/divergence
 
 ## Computation
 
-The script `compute_divergence_over_training.py` illustrates how checkpoint divergence is computed throughout training.
-
-At the moment, the full experiments are not directly reproducible because the model checkpoints will be released upon acceptance.
+The scripts `compute_divergence_over_training.py` (weights) and `compute_divergence_over_training_extra.py` (activations, logits, probabilities) illustrates how checkpoint divergence is computed throughout training.
 
 ---
 
 ## Plots
 
-Although the checkpoints are not yet available, we provide the precomputed divergence data to enable inspection and plot reproduction.
+### RMS Plots
 
-To reproduce the plots, run:
+We additionally provide the precomputed divergence data to enable inspection and plot reproduction.
+
+To reproduce the RMS plots, run:
 
 ```bash
 python plot_div_compare.py \
@@ -200,4 +200,23 @@ python plot_div_compare.py \
     --jsons our_1000-1100k/divergence.json our_1000-1100k_dcos/divergence.json \
     --labels "Stable LR" "Decay LR" \
     --out our_1000-1100k_stable_vs_decay
+```
+
+## Activations, logits, and probabilities
+
+For divergence measured in activation, logit, or probability space, use `plot_div_compare_extra.py` with the same structure as above. You can select the representation space and metric via:
+
+```
+--space [activations | logits | probabilities]
+--metric [cosine | kl]
+```
+
+**Example**:
+```bash
+python plot_div_compare_extra.py \
+    --jsons ... \
+    --labels "Stable LR" "Decay LR" \
+    --space activations \
+    --metric cosine \
+    --out ...
 ```
