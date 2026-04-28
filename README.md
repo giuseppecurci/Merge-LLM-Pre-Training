@@ -3,7 +3,7 @@
 Official repository of the paper  
 **"Practical Guidelines for Model Merging in LLM Pre-Training"** (ACL, 2026)
 
-Checkpoints of the Villanova model will be soon made available.
+Checkpoints of the Villanova model available on [Hugging Face](https://huggingface.co/VillanovaAI/Villanova-2B-checkpoints).
 
 ---
 
